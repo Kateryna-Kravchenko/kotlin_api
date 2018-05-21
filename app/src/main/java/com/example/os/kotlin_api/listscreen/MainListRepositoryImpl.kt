@@ -11,9 +11,8 @@ class MainListRepositoryImpl(val mLocalDataSource: LocalDataSource,
                              val mRemoteDataSource: RemoteDataSource) : MainListRepository {
 
     override fun getNewPosts(): Observable<List<Post>> {
-        val localList = mLocalDataSource.getPostsLocal()
-                .subscribeOn(Schedulers.computation())
-        val remoteList = mRemoteDataSource.getPosts()
+
+       return mRemoteDataSource.getPosts()
                 .map({ list ->
                     Observable.create<Observable<List<Post>>> { subscriber ->
                         mLocalDataSource.savePosts(list)
@@ -22,7 +21,6 @@ class MainListRepositoryImpl(val mLocalDataSource: LocalDataSource,
                     list
                 })
                 .subscribeOn(Schedulers.io())
-        return Observable
-                .concat(remoteList, localList)
+
     }
 }
